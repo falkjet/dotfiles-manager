@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"path"
@@ -14,13 +15,17 @@ var infoCmd = &cobra.Command{
 	Use:   "info",
 	Short: "info the dotfiles repository",
 	RunE: func(cmd *cobra.Command, args []string) (err error) {
+		repo.LoadConfig(false)
 
 		absoluteRepoLocation, err := filepath.Abs(repoLocation)
 		cobra.CheckErr(err)
 
+		config, err := json.Marshal(repo.Config)
+		cobra.CheckErr(err)
 		fmt.Printf("\x1b[32mrepo\x1b[0m            : %s\n", repoLocation)
 		fmt.Printf("\x1b[32mrepo (absolute)\x1b[0m : %s\n", absoluteRepoLocation)
 		fmt.Printf("\x1b[32mtarget\x1b[0m          : %s\n", targetDir)
+		fmt.Printf("\x1b[32mconfig\x1b[0m          : %#v\n", string(config))
 
 		for _, arg := range args {
 			stat, err := os.Lstat(arg)

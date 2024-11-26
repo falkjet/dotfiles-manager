@@ -1,21 +1,59 @@
 package internal
 
 import (
+	"encoding/json"
 	"os"
 	"path"
 	"strings"
 )
 
-func NewRepo(repoDir, targetDir string) *Repo {
-	return &Repo{
+func NewRepo(repoDir, targetDir string) (repo *Repo) {
+	repo = &Repo{
 		repoDir:   repoDir,
 		targetDir: targetDir,
 	}
+	return repo
 }
 
 type Repo struct {
 	repoDir   string
 	targetDir string
+	Config    *Config
+}
+
+type Config struct {
+	NoFold PathTree `json:"no fold"`
+}
+
+type PathTree map[string]PathTree
+
+func (repo *Repo) SaveConfig() (err error) {
+	if repo.Config == nil {
+		return // No need to save
+	}
+	file, err := os.Create(path.Join(repo.repoDir, "config.json"))
+	if err != nil {
+		return err
+	}
+	encoder := json.NewEncoder(file)
+	return encoder.Encode(repo.Config)
+}
+
+func (repo *Repo) LoadConfig(create bool) (err error) {
+	var config Config
+
+	configFile, err := os.Open(path.Join(repo.repoDir, "config.json"))
+	if os.IsNotExist(err) {
+		if create {
+			repo.Config = &config
+		}
+		return nil // No config is not an error
+	}
+
+	decoder := json.NewDecoder(configFile)
+	decoder.Decode(&config)
+	repo.Config = &config
+	return nil
 }
 
 func (repo *Repo) ModulePath(module string) string {

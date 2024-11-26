@@ -26,6 +26,9 @@ func Execute() {
 
 func init() {
 	cobra.OnInitialize(initConfig)
+	cobra.OnFinalize(func() {
+		cobra.CheckErr(repo.SaveConfig())
+	})
 
 	rootCmd.PersistentFlags().StringVar(
 		&repoLocation, "repo-location", "",
@@ -48,5 +51,7 @@ func initConfig() {
 		targetDir = home
 	}
 
+	var err error
 	repo = internal.NewRepo(repoLocation, targetDir)
+	cobra.CheckErr(err)
 }
