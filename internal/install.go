@@ -115,12 +115,11 @@ func (repo *Repo) installDirsToDir(sources []string, target string) (err error) 
 
 func (repo *Repo) installSingle(source string, target string) (err error) {
 	targetStat, err := os.Lstat(target)
+	if os.IsNotExist(err) {
+		return repo.installSingleToNonexistentTarget(source, target)
+	}
 	if err != nil {
-		if os.IsNotExist(err) {
-			return repo.installSingleToNonexistentTarget(source, target)
-		} else {
-			return err
-		}
+		return err
 	}
 
 	sourceStat, err := os.Stat(source)
