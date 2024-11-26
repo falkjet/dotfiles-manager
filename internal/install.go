@@ -29,9 +29,9 @@ func (repo *Repo) Install(modules []string) (err error) {
 }
 
 func (repo *Repo) install(sources []string, target string) (err error) {
-	fmt.Printf("install ...%s\n", target[max(0, len(target)-25):])
+	fmt.Printf("install %s\n", truncateStart(target, 25))
 	for _, path := range sources {
-		fmt.Printf("    ...%s\n", path[len(path)-30:])
+		fmt.Printf("    %s\n", truncateStart(path, 30))
 	}
 
 	if len(sources) == 0 {
@@ -168,15 +168,4 @@ func (repo *Repo) installSingle(source string, target string) (err error) {
 
 func (repo *Repo) installSingleToNonexistentTarget(source, target string) (err error) {
 	return os.Symlink(source, target)
-}
-
-func readLinkAbs(link string) (location string, err error) {
-	location, err = os.Readlink(link)
-	if err != nil {
-		return "", err
-	}
-	if !path.IsAbs(location) {
-		location = path.Join(path.Dir(link), location)
-	}
-	return location, nil
 }
