@@ -29,7 +29,7 @@ func (repo *Repo) Install(modules []string) (err error) {
 }
 
 func (repo *Repo) install(sources []string, target string) (err error) {
-	fmt.Printf("install ...%s\n", target[len(target)-25:])
+	fmt.Printf("install ...%s\n", target[max(0, len(target)-25):])
 	for _, path := range sources {
 		fmt.Printf("    ...%s\n", path[len(path)-30:])
 	}
@@ -77,6 +77,7 @@ func (repo *Repo) install(sources []string, target string) (err error) {
 			return fmt.Errorf("file %s already exists", target)
 		}
 
+		// Could probably be made easier using a call to Repo.Unfold
 		err = os.Remove(target)
 		if err != nil {
 			return err
