@@ -42,7 +42,7 @@ func (repo *Repo) uninstall(source, target string) (err error) {
 			return err
 		}
 		if source == location {
-			return os.Remove(location)
+			return os.Remove(target)
 		}
 		return nil
 	default:
