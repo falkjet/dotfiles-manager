@@ -18,9 +18,21 @@ func (repo *Repo) Unfold(path string) (err error) {
 	}
 	pathRelativeToRepo := strings.TrimPrefix(abspath, repo.targetDir)
 	pathRelativeToRepo = strings.TrimPrefix(pathRelativeToRepo, "/")
-	repo.addUnfold(path)
 
-	location, err := readLinkAbs(path)
+	if repo.Config.NoFold == nil {
+		repo.Config.NoFold = PathTree{}
+	}
+	repo.Config.NoFold.Add(pathRelativeToRepo)
+
+	stat, err := os.Lstat(abspath)
+	if err != nil {
+		return err
+	}
+	if stat.Mode() & os.ModeSymlink == 0 {
+		return
+	}
+
+	location, err := readLinkAbs(abspath)
 	if err != nil {
 		return err
 	}
@@ -37,8 +49,4 @@ func (repo *Repo) Unfold(path string) (err error) {
 	}
 
 	return repo.install([]string{location}, path, nil)
-}
-
-func (repo *Repo) addUnfold(path string) {
-
 }

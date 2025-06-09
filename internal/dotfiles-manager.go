@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"os"
 	"path"
+	"path/filepath"
+	"slices"
 	"strings"
 )
 
@@ -26,6 +28,31 @@ type Config struct {
 }
 
 type PathTree map[string]PathTree
+
+func (t PathTree) Add(path string) {
+	path = strings.TrimPrefix(filepath.Clean(path), "/")
+	firstSlash := strings.IndexRune(path, '/')
+
+	var parts []string
+	for len(path) != firstSlash+1 {
+		var part string
+		path, part = filepath.Split(path)
+		parts = append(parts, part)
+		if part == "" {
+			break
+		}
+	}
+	if len(path) > 0 {
+		parts = append(parts, path)
+	}
+	slices.Reverse(parts)
+	for _, name := range parts {
+		if t[name] == nil {
+			t[name] = PathTree{}
+		}
+		t = t[name]
+	}
+}
 
 func (repo *Repo) SaveConfig() (err error) {
 	if repo.Config == nil {
