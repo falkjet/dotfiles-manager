@@ -29,11 +29,6 @@ func (repo *Repo) Install(modules []string) (err error) {
 }
 
 func (repo *Repo) install(sources []string, target string, nofold PathTree) (err error) {
-	fmt.Printf("install %s\n", truncateStart(target, 25))
-	for _, path := range sources {
-		fmt.Printf("    %s\n", truncateStart(path, 30))
-	}
-
 	if len(sources) == 0 {
 		return nil
 	}
