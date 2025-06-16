@@ -17,7 +17,6 @@ func (repo *Repo) Unfold(path string) (err error) {
 		return fmt.Errorf("Path not in repo: %q", path)
 	}
 	pathRelativeToRepo := strings.TrimPrefix(abspath, repo.targetDir)
-	pathRelativeToRepo = strings.TrimPrefix(pathRelativeToRepo, "/")
 
 	if repo.Config.NoFold == nil {
 		repo.Config.NoFold = PathTree{}

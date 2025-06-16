@@ -30,7 +30,7 @@ type Config struct {
 type PathTree map[string]PathTree
 
 func (t PathTree) Add(path string) {
-	path = strings.TrimPrefix(filepath.Clean(path), "/")
+	path = strings.Trim(filepath.Clean(path), "/")
 	firstSlash := strings.IndexRune(path, '/')
 
 	var parts []string
